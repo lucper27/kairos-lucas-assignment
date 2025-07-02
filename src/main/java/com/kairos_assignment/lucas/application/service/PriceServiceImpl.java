@@ -6,6 +6,8 @@ import com.kairos_assignment.lucas.application.mapper.PriceMapper;
 import com.kairos_assignment.lucas.domain.entity.Price;
 import com.kairos_assignment.lucas.domain.persistence.PriceRepository;
 import com.kairos_assignment.lucas.domain.service.PriceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class PriceServiceImpl implements PriceService {
+
+    private final Logger log = LoggerFactory.getLogger(PriceServiceImpl.class);
 
     private final PriceRepository priceRepository;
 
@@ -27,6 +31,8 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public PriceResponseDTO findApplicablePrice(Instant date, Long productId, Long brandId) {
+        log.debug("finding applicable price with params {}, {}, {}", date, productId, brandId);
+
         List<Price> applicablePrices = priceRepository.findApplicablePrices(date, productId, brandId);
         Price highestPriorityPrice = applicablePrices
                 .stream()
