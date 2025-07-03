@@ -1,4 +1,4 @@
-package com.kairos_assignment.lucas.infrastructure.rest.exception;
+package com.kairos_assignment.lucas.application.exception;
 
 public class BadRequestException extends RuntimeException {
 
