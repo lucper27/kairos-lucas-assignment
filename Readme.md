@@ -76,3 +76,7 @@ Additionally, the following error-handling scenarios are covered in the tests:
 - Returns HTTP 400 Bad Request when `productId` parameter is missing in the endpoint
 - Returns HTTP 400 Bad Request when `brandId` parameter is missing in the endpoint
 - Returns HTTP 404 Not Found when no price is found for the given parameters
+- Invalid parameter types (e.g., non-numeric `productId` or `brandId`, malformed `date`) resulting in HTTP 400 Bad Request, for example:  
+  - `brandId` with invalid value `"invalidBrandId"`  
+  - `productId` with invalid value `"invalidProductId"`  
+  - `date` with invalid value `"invalidDate"`
