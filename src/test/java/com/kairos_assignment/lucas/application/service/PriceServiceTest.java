@@ -2,6 +2,7 @@ package com.kairos_assignment.lucas.application.service;
 
 
 import com.kairos_assignment.lucas.application.dto.PriceResponseDTO;
+import com.kairos_assignment.lucas.application.exception.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,8 +11,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class PriceServiceTest {
@@ -59,6 +59,45 @@ public class PriceServiceTest {
         Instant testDate = toInstant("2020-06-16T21:00:00");
         PriceResponseDTO result = priceService.findApplicablePrice(testDate, testProductId, testBrandId);
         assertEquals(4, result.getPriceList());
+    }
+
+    @Test
+    void shouldThrowBadRequestExceptionWhenDateIsNull() {
+        Long productId = 35455L;
+        Long brandId = 1L;
+
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> priceService.findApplicablePrice(null, productId, brandId)
+        );
+
+        assertEquals("Date, productId, and brandId must not be null.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowBadRequestExceptionWhenProductIdIsNull() {
+        Instant testDate = toInstant("2020-06-14T10:00:00");
+        Long brandId = 1L;
+
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> priceService.findApplicablePrice(testDate, null, brandId)
+        );
+
+        assertEquals("Date, productId, and brandId must not be null.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowBadRequestExceptionWhenBrandIdIsNull() {
+        Instant testDate = toInstant("2020-06-14T10:00:00");
+        Long productId = 35455L;
+
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> priceService.findApplicablePrice(testDate, productId, null)
+        );
+
+        assertEquals("Date, productId, and brandId must not be null.", exception.getMessage());
     }
 
     private Instant toInstant(String dateTime) {

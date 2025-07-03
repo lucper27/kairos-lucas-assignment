@@ -2,8 +2,7 @@ package com.kairos_assignment.lucas.infrastructure.rest;
 
 import com.kairos_assignment.lucas.application.dto.PriceResponseDTO;
 import com.kairos_assignment.lucas.domain.service.PriceService;
-import com.kairos_assignment.lucas.infrastructure.rest.exception.BadRequestException;
-import com.kairos_assignment.lucas.infrastructure.rest.exception.PriceResourceException;
+import com.kairos_assignment.lucas.application.exception.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,16 +33,9 @@ public class PriceResource {
             @RequestParam Long brandId
     ) {
         log.debug("Rest request to find applicable price with params {}, {}, {} ", date, productId, brandId);
-        if (productId == null || brandId == null || date == null) {
-            throw new BadRequestException("Error: params can not be null");
-        }
-        try {
-            PriceResponseDTO response = priceService.findApplicablePrice(date, productId, brandId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error while finding applicable price. Error -> {}", e.getMessage());
-            throw new PriceResourceException("Error while finding price");
-        }
 
+        PriceResponseDTO response = priceService.findApplicablePrice(date, productId, brandId);
+
+        return ResponseEntity.ok(response);
     }
 }

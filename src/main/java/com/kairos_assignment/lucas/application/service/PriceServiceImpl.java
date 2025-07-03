@@ -1,6 +1,7 @@
 package com.kairos_assignment.lucas.application.service;
 
 import com.kairos_assignment.lucas.application.dto.PriceResponseDTO;
+import com.kairos_assignment.lucas.application.exception.BadRequestException;
 import com.kairos_assignment.lucas.application.exception.PriceNotFoundException;
 import com.kairos_assignment.lucas.application.mapper.PriceMapper;
 import com.kairos_assignment.lucas.domain.entity.Price;
@@ -28,16 +29,19 @@ public class PriceServiceImpl implements PriceService {
         this.priceMapper = priceMapper;
     }
 
-
     @Override
     public PriceResponseDTO findApplicablePrice(Instant date, Long productId, Long brandId) {
         log.debug("finding applicable price with params {}, {}, {}", date, productId, brandId);
+        if (date == null || productId == null || brandId == null) {
+            throw new BadRequestException("Date, productId, and brandId must not be null.");
+        }
 
         List<Price> applicablePrices = priceRepository.findApplicablePrices(date, productId, brandId);
+
         Price highestPriorityPrice = applicablePrices
                 .stream()
                 .max(Comparator.comparing(Price::getPriority))
-                .orElseThrow(() -> new PriceNotFoundException("Price not found for given parameters"));
+                .orElseThrow(() -> new PriceNotFoundException("Price not found"));
 
         return priceMapper.toDto(highestPriorityPrice);
     }

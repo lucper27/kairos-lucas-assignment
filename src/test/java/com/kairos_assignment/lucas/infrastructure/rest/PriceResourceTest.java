@@ -70,4 +70,39 @@ public class PriceResourceTest {
                 .andExpect(jsonPath("$.priceList").value(4))
                 .andExpect(jsonPath("$.price").value(38.95));
     }
+
+    @Test
+    void shouldReturnBadRequestWhenDateIsMissing() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("productId", "35455")
+                        .param("brandId", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenProductIdIsMissing() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "2020-06-14T10:00:00Z")
+                        .param("brandId", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenBrandIdIsMissing() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "2020-06-14T10:00:00Z")
+                        .param("productId", "35455"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenNoPriceFound() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "2099-01-01T00:00:00Z") // Fecha sin precios
+                        .param("productId", "99999")
+                        .param("brandId", "999"))
+                .andExpect(status().isNotFound());
+    }
+
+
 }
