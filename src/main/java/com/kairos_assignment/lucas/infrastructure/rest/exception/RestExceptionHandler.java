@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 
@@ -28,6 +29,13 @@ public class RestExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred.", request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleArgumentMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String message = String.format("Invalid value '%s' for parameter '%s'. Expected type is '%s'.",
+                ex.getValue(), ex.getName(), ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, String path) {

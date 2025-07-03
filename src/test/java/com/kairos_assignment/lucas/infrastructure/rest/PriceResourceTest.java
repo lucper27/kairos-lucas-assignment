@@ -98,11 +98,42 @@ public class PriceResourceTest {
     @Test
     void shouldReturnNotFoundWhenNoPriceFound() throws Exception {
         mockMvc.perform(get("/api/prices")
-                        .param("date", "2099-01-01T00:00:00Z") // Fecha sin precios
+                        .param("date", "2099-01-01T00:00:00Z")
                         .param("productId", "99999")
                         .param("brandId", "999"))
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldReturnBadRequestWhenParameterTypeIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "2020-06-14T10:00:00Z")
+                        .param("productId", "35455")
+                        .param("brandId", "invalidBrandId"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value 'invalidBrandId' for parameter 'brandId'. Expected type is 'Long'."));
+    }
+    @Test
+    void shouldReturnBadRequestWhenProductIdTypeIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "2020-06-14T10:00:00Z")
+                        .param("productId", "invalidProductId")
+                        .param("brandId", "1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value 'invalidProductId' for parameter 'productId'. Expected type is 'Long'."));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenDateTypeIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/prices")
+                        .param("date", "invalidDate")
+                        .param("productId", "35455")
+                        .param("brandId", "1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value 'invalidDate' for parameter 'date'. Expected type is 'Instant'."));
+    }
 
 }
