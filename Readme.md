@@ -32,7 +32,7 @@ A Spring Boot application that provides an endpoint to query product prices base
 `GET /api/prices`
 
 **Parameters:**
-- `applicationDate` - DateTime in ISO Instant format (e.g., `"2020-06-14T10:00:00Z"`)
+- `date` - DateTime in ISO Instant format (e.g., `"2020-06-14T10:00:00Z"`)
 - `productId` - Product identifier (e.g., 35455)
 - `brandId` - Brand identifier (e.g., 1)
 
@@ -47,8 +47,9 @@ A Spring Boot application that provides an endpoint to query product prices base
     "price": 35.50,
     "currency": "EUR"
 }
+```
 
-# Running the application
+## Running the application
 
 1- Clone the repository
 
@@ -56,16 +57,22 @@ A Spring Boot application that provides an endpoint to query product prices base
 
 3- Run the application: mvn spring-boot:run
 
-# Testing
+## Testing
 
 Integration testing for PriceResource and unit testing for PriceService includes the following:
 
-1- Request at 10:00 on day 14 for product 35455 and brand 1 (2020-06-14T10:00:00Z)
+- Request at 10:00 on day 14 for product 35455 and brand 1 (`2020-06-14T10:00:00Z`)  
+- Request at 16:00 on day 14 for product 35455 and brand 1 (`2020-06-14T16:00:00Z`)  
+- Request at 21:00 on day 14 for product 35455 and brand 1 (`2020-06-14T21:00:00Z`)  
+- Request at 10:00 on day 15 for product 35455 and brand 1 (`2020-06-15T10:00:00Z`)  
+- Request at 21:00 on day 16 for product 35455 and brand 1 (`2020-06-16T21:00:00Z`)
 
-2- Request at 16:00 on day 14 for product 35455 and brand 1 (2020-06-14T16:00:00Z)
+Additionally, the following error-handling scenarios are covered in the tests:
 
-3- Request at 21:00 on day 14 for product 35455 and brand 1 (2020-06-14T21:00:00Z)
-
-4- Request at 10:00 on day 15 for product 35455 and brand 1 (2020-06-15T10:00:00Z)
-
-5- Request at 21:00 on day 16 for product 35455 and brand 1 (2020-06-16T21:00:00Z)
+- Throws `BadRequestException` when `date` is null in the service layer
+- Throws `BadRequestException` when `productId` is null in the service layer
+- Throws `BadRequestException` when `brandId` is null in the service layer
+- Returns HTTP 400 Bad Request when `date` parameter is missing in the endpoint
+- Returns HTTP 400 Bad Request when `productId` parameter is missing in the endpoint
+- Returns HTTP 400 Bad Request when `brandId` parameter is missing in the endpoint
+- Returns HTTP 404 Not Found when no price is found for the given parameters
